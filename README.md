@@ -1,1 +1,1 @@
-# A wrapper for the Kraren exchange API
+# A wrapper for the Kraken exchange API
