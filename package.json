@@ -1,0 +1,26 @@
+{
+  "name": "kraken-wrapper",
+  "version": "1.0.0",
+  "description": "A wrapper for the Kraren exchange API",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coinsop/kraken-wrapper.git"
+  },
+  "keywords": [
+    "kraken",
+    "api",
+    "wrapper",
+    "exchage",
+    "cryptocurrency"
+  ],
+  "author": "Olivers De Abreu <olivers@vensign.com> (http://vensign.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/coinsop/kraken-wrapper/issues"
+  },
+  "homepage": "https://github.com/coinsop/kraken-wrapper#readme"
+}
