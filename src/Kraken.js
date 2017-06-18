@@ -16,3 +16,5 @@ class Kraken {
 
   }
 }
+
+export default Kraken;
