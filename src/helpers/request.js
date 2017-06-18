@@ -1,4 +1,4 @@
-import http from 'http';
+import https from 'https';
 
 /**
  * Checks if str is a valid JSON string
@@ -16,21 +16,21 @@ const isJson = (str) => {
 };
 
 /**
- * Makes an http request
+ * Makes an https request
  *
- * @param {Object} opts Request connection options
- * @param {String} opts.method HTTP verb or method
- * @param {String} opts.host Host address
- * @param {String} opts.path URL path
- * @param {String} opts.port Server port
- * @param {Object} opts.headers HTTP headers
+ * @param {Object} options Request connection options
+ * @param {String} options.method HTTP verb or method
+ * @param {String} options.hostname Host address
+ * @param {String} options.path URL path
+ * @param {String} options.port Server port
+ * @param {Object} options.headers HTTP headers
  * @param {Object} data Object to send
  * @returns Promise
  */
-const request = (opts, data) =>
+const request = (options, data) =>
   new Promise((resolve, reject) => {
     try {
-      const req = http.request(opts, (res) => {
+      const req = https.request(options, (res) => {
         let str = '';
         res.on('data', (chunk) => {
           str += chunk;
@@ -42,7 +42,7 @@ const request = (opts, data) =>
           reject(e);
         });
       });
-      if ((opts.method.toUpperCase() === 'PUT' || opts.method.toUpperCase() === 'POST') && data) {
+      if ((options.method.toUpperCase() === 'PUT' || options.method.toUpperCase() === 'POST') && data) {
         req.write(JSON.stringify(data));
       }
       req.end();
