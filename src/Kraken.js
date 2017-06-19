@@ -36,6 +36,39 @@ class Kraken {
     }).catch((error) => cb(error));
   }
 
+  /**
+   * Returns a json object with a list of the assets available on kraken
+   *
+   * @param {string} [assets] - comma delimited list of assets to get
+   *                                              info on for given asset class (optional).
+   *                                              default = null
+   * @param  {Function} cb - callback]
+   * @return {Object}  - JSON Object - { XETH: { aclass: 'currency', altname: 'ETH', decimals: 10,  display_decimals: 5 } }
+   *
+   */
+  getAssetInfo(assets=null, cb) {
+    let path = '/0/public/Assets';
+
+    if (assets && assets !== 'all' ) {
+      if (typeof assets !== 'string') {
+        return cb('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
+      }
+      // Remove any whitespace
+      assets = assets.replace(/\s/g,'')
+      path = `${path}?asset=${assets}`;
+    }
+
+    const options = {
+      hostname: this.__apiBase,
+      port: 443,
+      path: path,
+      method: 'GET',
+    }
+    request(options).then((response) => {
+      return cb(null, response.result);
+    }).catch((error) => cb(error));
+  }
+
 }
 
 module.exports = Kraken;

@@ -4,7 +4,7 @@
   "description": "A wrapper for the Kraken exchange API",
   "main": "src/Kraken.js",
   "scripts": {
-    "start": "nodemon src/Kraken.js --exec babel-node",
+    "start": "nodemon src/index.js --exec babel-node",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register ./test --recursive --require babel-polyfill",
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && mkdir dist && babel src -s -d dist && npm run serve",
