@@ -9,8 +9,8 @@
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && mkdir dist && babel src -s -d dist && npm run serve",
     "serve": "DEBUG=* node dist/Kraken.js",
-    "lint:watch": "esw -f simple-detail -w *.js server",
-    "lint": "eslint *.js server"
+    "lint:watch": "esw -f simple-detail -w *.js src",
+    "lint": "eslint *.js src"
   },
   "repository": {
     "type": "git",

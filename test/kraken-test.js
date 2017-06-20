@@ -46,4 +46,23 @@ describe('Kraken', () => {
     });
 
   });
+
+  describe('getTradableAssetPairs', () => {
+    it('should show all the tradable assets pairs available on Kraken', (done) => {
+      kraken.getTradableAssetPairs({ info: 'all', pair: 'all' }, (error, response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        done();
+      })
+    });
+
+    it('should show only two tradable assets on Kraken', (done) => {
+      kraken.getTradableAssetPairs({ info: 'all', pair: 'ETHUSD,XRPUSD' }, (error, response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 2).to.be.true;
+        expect(response.XETHZUSD).to.have.property('altname');
+        done();
+      })
+    });
+  });
 });
