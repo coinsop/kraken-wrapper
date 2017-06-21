@@ -67,4 +67,34 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  describe('getTickerInformation', () => {
+    it('should show all the assets available on Kraken', (done) => {
+      kraken.getTickerInformation('ETHUSD').then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        done();
+      }).catch(error => done(error));
+    });
+
+    it('should show only two assets on Kraken', (done) => {
+      kraken.getTickerInformation('ETHUSD,LTCXBT').then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 2).to.be.true;
+        expect(response.XETHZUSD).to.have.property('a');
+        done();
+      }).catch(error=> done(error) );
+    });
+
+    it('should NOT accept assets that are no strings', (done) => {
+      kraken.getTickerInformation({ curr1: 'ETH', curr2: 'XRP' }).then((response) => {
+        expect(response).to.be.undefined;
+        done();
+      }).catch((error) => {
+        expect(error).to.be.equal('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        done();
+      });
+    });
+
+  });
 });

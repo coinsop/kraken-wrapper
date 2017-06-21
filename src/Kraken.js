@@ -52,7 +52,7 @@ class Kraken {
 
       if (assets && assets !== 'all' ) {
         if (typeof assets !== 'string') {
-          reject('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP'); //return cb('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
+          reject('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
         }
         // Remove any whitespace
         assets = assets.replace(/\s/g,'')
@@ -66,7 +66,7 @@ class Kraken {
         method: 'GET'
       }
       request(options).then((response) => {
-        resolve(response.result); //return cb(null, response.result);
+        resolve(response.result);
       }).catch((error) => reject(error));
     });
   }
@@ -109,10 +109,47 @@ class Kraken {
             path = `${path}${pairSeparator}pair=${inputs.pair}`;
           }
         } else {
-          reject('pair option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
+          reject('pair option must be a string, could be all for all assets or a comma separated values such as ETHUSD,XRPUSD');
         }
       } else {
         reject("getTradableAssetPairs require an input {info:'all', pair:'all'} as first argument");
+      }
+
+      const options = {
+        hostname: this.__apiBase,
+        port: 443,
+        path: path,
+        method: 'GET',
+      }
+
+      request(options).then((response) => {
+        resolve(response.result);
+      }).catch((error) => reject(error));
+    });
+  }
+
+
+   /**
+   * Get ticker information
+   * Returns an array of pair names and their ticker info
+   *
+   * @param {string} [pair] - comma delimited list of asset pairs to get info on
+   * @return {Object}  - JSON Object - "XETHZUSD": {"a": ["349.28068","1","1.000"], "b": ["346.75998","4","4.000"],
+   * "c": ["348.14094","0.01400000"],"v": ["487.87279670","72199.49047653"],"p": ["348.24177","348.24025"],"t": [421,21937],
+   * "l": ["345.00000","306.99981"],"h": ["351.49000","365.98700"],"o": "348.49998"}
+   *
+   */
+  getTickerInformation(pair=null) {
+    return new Promise((resolve, reject) => {
+      let path = '/0/public/Ticker';
+
+      if (pair && pair !== 'all' ) {
+        if (typeof pair !== 'string') {
+          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        }
+        // Remove any whitespace
+        pair = pair.replace(/\s/g,'')
+        path = `${path}?pair=${pair}`;
       }
 
       const options = {
