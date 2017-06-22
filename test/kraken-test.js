@@ -97,4 +97,14 @@ describe('Kraken', () => {
     });
 
   });
+
+  describe('getOHLC', () => {
+    it('should show an array of pair name and OHLC data on Kraken', (done) => {
+      kraken.getOHLC({ pair: 'LTCXBT' }).then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        done();
+      }).catch(error => done(error));
+    });
+  });
 });

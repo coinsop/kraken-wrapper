@@ -75,7 +75,7 @@ class Kraken {
    * Get tradable asset pairs
    * Returns an array of pair names and their info
    *
-   * @param {object} [inputs] - { info: 'all' // (default = all)  leverage, fees, margin (optional)
+   * @param {object} [inputs] - { info: 'all' // (default = all)  leverage, fees, margin (required)
    *                                                   pair: 'all' // (default = all), comma delimited list of asset pairs to get info on
    *                                                 }
    * @return {Object}  - JSON Object - "DASHUSD": {"altname": "DASHUSD","aclass_base": "currency","base": "DASH",
@@ -150,6 +150,63 @@ class Kraken {
         // Remove any whitespace
         pair = pair.replace(/\s/g,'')
         path = `${path}?pair=${pair}`;
+      }
+
+      const options = {
+        hostname: this.__apiBase,
+        port: 443,
+        path: path,
+        method: 'GET',
+      }
+
+      request(options).then((response) => {
+        resolve(response.result);
+      }).catch((error) => reject(error));
+    });
+  }
+
+  /**
+   * Get OCHL data
+   * Returns an array of pair names and their ticker info
+   *
+   * @param {object} [inputs] - { pair: '' // required, asset pair to get OHLC data for
+   *                                                   interval: 1 // (default = 1), time frame interval in minutes, could be 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600
+   *                                                   since: return committed OHLC data since given id
+   *                                                 }
+   * @return {Object}  - JSON Object - "XETHZUSD": {"a": ["349.28068","1","1.000"], "b": ["346.75998","4","4.000"],
+   * "c": ["348.14094","0.01400000"],"v": ["487.87279670","72199.49047653"],"p": ["348.24177","348.24025"],"t": [421,21937],
+   * "l": ["345.00000","306.99981"],"h": ["351.49000","365.98700"],"o": "348.49998"}
+   *
+   */
+  getOHLC(input = { pair: null, interval: 1, since: null}) {
+    return new Promise((resolve, reject) => {
+      let path = '/0/public/OHLC';
+
+      if (!input || !input.pair) {
+        reject("You must at least indicate the trading pair getOCHL({pair: 'tradingpair'})");
+      }
+
+      if (input.pair ) {
+        if (typeof input.pair !== 'string') {
+          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        }
+        // Remove any whitespace
+        input.pair = input.pair.replace(/\s/g,'')
+        path = `${path}?pair=${input.pair}`;
+      }
+
+      if (input.interval) {
+        if (typeof input.interval !== 'number') {
+          reject('Interval option must be a integer, 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600');
+        }
+        path = `${path}&interval=${input.interval}`;
+      }
+
+      if (input.since) {
+        if (typeof input.since !== 'number') {
+          reject('Since option must be a unix time, for example 1495864800');
+        }
+        path = `${path}&interval=${input.since}`;
       }
 
       const options = {
