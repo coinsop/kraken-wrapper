@@ -220,6 +220,8 @@ class Kraken {
    *                                                   count: maximum number of asks/bids (optional)
    *                                                 }
    * @return {Object}  - JSON Object - { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
+   * asks = ask side array of array entries(<price>, <volume>, <timestamp>)
+  *  bids = bid side array of array entries(<price>, <volume>, <timestamp>)
    *
    */
   getOrderBook(params = { pair: null, count: null}) {
@@ -245,6 +247,47 @@ class Kraken {
       }
 
       this.doRequest('public', 'Depth', params).then((response) => {
+        resolve(response);
+      }).catch((error) => reject(error));
+    });
+  }
+
+   /**
+   * Get recent trades
+   * Returns an array of pair name and recent trade data
+   *
+   * @param {object} [inputs] - { pair: '' // required, asset pair to get trade data for
+   *                                                 since = return trade data since given id (optional.  exclusive)
+   *                                                 }
+   * @return {Object}  - JSON Object - { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
+   *  <pair_name> = pair name
+   *   array of array entries(<price>, <volume>, <time>, <buy/sell>, <market/limit>, <miscellaneous>)
+   *   last = id to be used as since when polling for new trade data
+   *
+   */
+  getTrades(params = { pair: null, since: null}) {
+    return new Promise((resolve, reject) => {
+
+      if (!params || !params.pair) {
+        reject("You must at least indicate the trading pair getOCHL({pair: 'tradingpair'})");
+      }
+
+      if (params.pair ) {
+        if (typeof params.pair !== 'string') {
+          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        }
+        // Remove any whitespace
+        params.pair = params.pair.replace(/\s/g,'')
+        params.pair = params.pair;
+      }
+
+      if (params.since) {
+        if (typeof params.since !== 'number') {
+          reject('Since option must be a unix timestamp');
+        }
+      }
+
+      this.doRequest('public', 'Trades', params).then((response) => {
         resolve(response);
       }).catch((error) => reject(error));
     });

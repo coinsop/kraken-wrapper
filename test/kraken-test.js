@@ -156,4 +156,24 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  describe('getTrades', () => {
+    it('should show an array of pair name and market depth', (done) => {
+      kraken.getTrades({ pair: 'LTCXBT' }).then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        done();
+      }).catch(error => done(error));
+    });
+
+    it('should give an error if the since option is not a number', (done) => {
+      kraken.getTrades({ pair: 'LTCXBT', since: 'hola' }).then((response) => {
+        expect(response).to.be.undefined;
+        done();
+      }).catch((error) => {
+        expect(error).to.be.equal('Since option must be a unix timestamp');
+        done();
+      });
+    });
+  });
 });
