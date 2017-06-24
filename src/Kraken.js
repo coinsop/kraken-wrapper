@@ -259,7 +259,7 @@ class Kraken {
    * @param {object} [inputs] - { pair: '' // required, asset pair to get trade data for
    *                                                 since = return trade data since given id (optional.  exclusive)
    *                                                 }
-   * @return {Object}  - JSON Object - { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
+   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ '0.01659800', '7.18559300', 1498314525.2248, 's', 'l', '' ], .... ]  }
    *  <pair_name> = pair name
    *   array of array entries(<price>, <volume>, <time>, <buy/sell>, <market/limit>, <miscellaneous>)
    *   last = id to be used as since when polling for new trade data
