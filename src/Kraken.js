@@ -216,8 +216,8 @@ class Kraken {
    * Get order book
    * Returns an array of pair name and market depth
    *
-   * @param {object} [inputs] - { pair: '' // required, asset pair to get market depth for
-   *                                                   count: maximum number of asks/bids (optional)
+   * @param {object} [params] - { pair: '' // required, asset pair to get market depth for
+   *                                                   count: // maximum number of asks/bids (optional)
    *                                                 }
    * @return {Object}  - JSON Object - { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
    * asks = ask side array of array entries(<price>, <volume>, <timestamp>)
@@ -228,7 +228,7 @@ class Kraken {
     return new Promise((resolve, reject) => {
 
       if (!params || !params.pair) {
-        reject("You must at least indicate the trading pair getOCHL({pair: 'tradingpair'})");
+        reject("You must at least indicate the trading pair getOrderBook({pair: 'tradingpair'})");
       }
 
       if (params.pair ) {
@@ -256,16 +256,57 @@ class Kraken {
    * Get recent trades
    * Returns an array of pair name and recent trade data
    *
-   * @param {object} [inputs] - { pair: '' // required, asset pair to get trade data for
-   *                                                 since = return trade data since given id (optional.  exclusive)
+   * @param {object} [params] - { pair: '' // required, asset pair to get trade data for
+   *                                                 since: '' // return trade data since given id (optional.  exclusive)
    *                                                 }
-   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ '0.01659800', '7.18559300', 1498314525.2248, 's', 'l', '' ], .... ]  }
+   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ '0.01659800', '7.18559300', 1498314525.2248, 's', 'l', '' ], .... ], last: 1498339561  }
    *  <pair_name> = pair name
    *   array of array entries(<price>, <volume>, <time>, <buy/sell>, <market/limit>, <miscellaneous>)
    *   last = id to be used as since when polling for new trade data
    *
    */
   getTrades(params = { pair: null, since: null}) {
+    return new Promise((resolve, reject) => {
+
+      if (!params || !params.pair) {
+        reject("You must at least indicate the trading pair getTrades({pair: 'tradingpair'})");
+      }
+
+      if (params.pair ) {
+        if (typeof params.pair !== 'string') {
+          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        }
+        // Remove any whitespace
+        params.pair = params.pair.replace(/\s/g,'')
+        params.pair = params.pair;
+      }
+
+      if (params.since) {
+        if (typeof params.since !== 'number') {
+          reject('Since option must be a unix timestamp');
+        }
+      }
+
+      this.doRequest('public', 'Trades', params).then((response) => {
+        resolve(response);
+      }).catch((error) => reject(error));
+    });
+  }
+
+  /**
+   * Get recent spread data
+   * Returns an array of pair name and recent spread data
+   *
+   * @param {object} [params] - { pair: '' // required, asset pair to get spread data for
+   *                                                 since:  // return spread data since given id (optional.  inclusive)
+   *                                                 }
+   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ 1498338706, '0.01657700', '0.01660500' ], [ 1498338743, '0.01657100', '0.01660500' ], ... ] , last: 1498339561}
+   *  <pair_name> = pair name
+   *   array of array entries(<time>, <bid>, <ask>)
+   *   last = id to be used as since when polling for new spread data
+   *
+   */
+  getSpread(params = { pair: null, since: null}) {
     return new Promise((resolve, reject) => {
 
       if (!params || !params.pair) {
@@ -287,7 +328,7 @@ class Kraken {
         }
       }
 
-      this.doRequest('public', 'Trades', params).then((response) => {
+      this.doRequest('public', 'Spread', params).then((response) => {
         resolve(response);
       }).catch((error) => reject(error));
     });
