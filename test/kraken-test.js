@@ -106,5 +106,25 @@ describe('Kraken', () => {
         done();
       }).catch(error => done(error));
     });
+
+    it('should give and error if the interval option is not a number', (done) => {
+      kraken.getOHLC({ pair: 'LTCXBT', interval: 'yesterday' }).then((response) => {
+        expect(response).to.be.undefined;
+        done();
+      }).catch((error) => {
+        expect(error).to.be.equal('Interval option must be a integer, and one of this intervals values 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600');
+        done();
+      });
+    });
+
+    it('should give and error if the since option is not a number', (done) => {
+      kraken.getOHLC({ pair: 'LTCXBT', since: 'yesterday' }).then((response) => {
+        expect(response).to.be.undefined;
+        done();
+      }).catch((error) => {
+        expect(error).to.be.equal('Since option must be a unix time, for example 1495864800');
+        done();
+      });
+    });
   });
 });
