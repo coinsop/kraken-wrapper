@@ -117,7 +117,7 @@ describe('Kraken', () => {
       });
     });
 
-    it('should give and error if the since option is not a number', (done) => {
+    it('should give an error if the since option is not a number', (done) => {
       kraken.getOHLC({ pair: 'LTCXBT', since: 'yesterday' }).then((response) => {
         expect(response).to.be.undefined;
         done();
@@ -125,6 +125,35 @@ describe('Kraken', () => {
         expect(error).to.be.equal('Since option must be a unix time, for example 1495864800');
         done();
       });
+    });
+  });
+
+  describe('getOrderBook', () => {
+    it('should show an array of pair name and market depth', (done) => {
+      kraken.getOrderBook({ pair: 'LTCXBT' }).then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        done();
+      }).catch(error => done(error));
+    });
+
+    it('should give an error if the count option is not a number', (done) => {
+      kraken.getOrderBook({ pair: 'LTCXBT', count: 'hola' }).then((response) => {
+        expect(response).to.be.undefined;
+        done();
+      }).catch((error) => {
+        expect(error).to.be.equal('Count option must be a integer');
+        done();
+      });
+    });
+
+    it('should show 5 asks and bids for the pair', (done) => {
+      kraken.getOrderBook({ pair: 'LTCXBT', count: 5 }).then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(response.XLTCXXBT.asks.length).to.be.equal(5);
+        expect(response.XLTCXXBT.bids.length).to.be.equal(5);
+        done();
+      }).catch(error => done(error));
     });
   });
 });

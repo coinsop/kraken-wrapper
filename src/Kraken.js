@@ -168,7 +168,7 @@ class Kraken {
    * Get OCHL data
    * Returns an array of pair names and their ticker info
    *
-   * @param {object} [inputs] - { pair: '' // required, asset pair to get OHLC data for
+   * @param {object} [params] - { pair: '' // required, asset pair to get OHLC data for
    *                                                   interval: 1 // (default = 1), time frame interval in minutes, could be 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600
    *                                                   since: return committed OHLC data since given id
    *                                                 }
@@ -179,7 +179,6 @@ class Kraken {
    */
   getOHLC(params = { pair: null, interval: 1, since: null}) {
     return new Promise((resolve, reject) => {
-      let path = '/0/public/OHLC';
       let intervalEnum = [1, 5, 15, 30, 60, 240, 1440, 10080, 21600]
 
       if (!params || !params.pair) {
@@ -213,6 +212,46 @@ class Kraken {
     });
   }
 
+  /**
+   * Get order book
+   * Returns an array of pair name and market depth
+   *
+   * @param {object} [inputs] - { pair: '' // required, asset pair to get market depth for
+   *                                                   count: maximum number of asks/bids (optional)
+   *                                                 }
+   * @return {Object}  - JSON Object - { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
+   *
+   */
+  getOrderBook(params = { pair: null, count: null}) {
+    return new Promise((resolve, reject) => {
+
+      if (!params || !params.pair) {
+        reject("You must at least indicate the trading pair getOCHL({pair: 'tradingpair'})");
+      }
+
+      if (params.pair ) {
+        if (typeof params.pair !== 'string') {
+          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        }
+        // Remove any whitespace
+        params.pair = params.pair.replace(/\s/g,'')
+        params.pair = params.pair;
+      }
+
+      if (params.count) {
+        if (typeof params.count !== 'number') {
+          reject('Count option must be a integer');
+        }
+      }
+
+      this.doRequest('public', 'Depth', params).then((response) => {
+        resolve(response);
+      }).catch((error) => reject(error));
+    });
+  }
+
 }
+
+
 
 module.exports = Kraken;
