@@ -1,4 +1,6 @@
 import https from 'https';
+import querystring from 'querystring';
+
 
 /**
  * Checks if str is a valid JSON string
@@ -29,22 +31,6 @@ const isValidType = (param) => {
 };
 
 /**
- * Parses an object to a query string url format
- *
- * @param {Object} obj object to parse
- * @returns String
- */
-const objectToQueryString = (obj) => {
-  const strArray = Object.keys(obj).map((key) => {
-    if (isValidType(obj[key])) {
-      return `${key}=${obj[key].toString()}`;
-    }
-    return null;
-  });
-  return strArray.length ? `?${strArray.filter(pair => pair !== null).join('&')}` : '';
-};
-
-/**
  * Makes an http request
  *
  * @param {String} opts.protocol HTTP or HTTPS
@@ -63,9 +49,8 @@ const request = (opts, data = null) =>
       let _opts = JSON.parse(JSON.stringify(opts));
 
       if (_opts.method.toUpperCase() === 'GET' && data) {
-        _opts = Object.assign({}, _opts, { path: `${_opts.path}${objectToQueryString(data)}` });
+        _opts = Object.assign({}, _opts, { path: `${_opts.path}?${querystring.stringify(data)}` });
       }
-
       const req = https.request(_opts, (res) => {
         let str = '';
         res.on('data', (chunk) => {
@@ -80,9 +65,8 @@ const request = (opts, data = null) =>
       });
 
       if ((_opts.method.toUpperCase() === 'PUT' || _opts.method.toUpperCase() === 'POST') && data) {
-        req.write(JSON.stringify(data));
+        req.write(querystring.stringify(data));
       }
-
       req.end();
     } catch (err) {
       reject(err);

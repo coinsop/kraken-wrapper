@@ -5,7 +5,7 @@
   "main": "src/Kraken.js",
   "scripts": {
     "start": "nodemon src/Kraken.js --exec babel-node",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register ./test --recursive --require babel-polyfill",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register ./test --recursive --require babel-polyfill --timeout 5000",
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && mkdir dist && babel src -s -d dist && npm run serve",
     "serve": "DEBUG=* node dist/Kraken.js",
@@ -35,6 +35,7 @@
     "babel-polyfill": "6.23.0",
     "babel-preset-env": "1.5.2",
     "babel-preset-stage-2": "6.24.1",
+    "dotenv": "4.0.0",
     "eslint": "4.0.0",
     "eslint-config-airbnb-base": "11.2.0",
     "eslint-plugin-import": "2.3.0",
@@ -43,6 +44,7 @@
   },
   "dependencies": {
     "chai": "4.0.2",
+    "crypto": "0.0.3",
     "mocha": "3.4.2"
   }
 }

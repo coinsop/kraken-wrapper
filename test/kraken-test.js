@@ -1,11 +1,16 @@
 import chai, { expect } from 'chai';
+import { config } from 'dotenv';
 
 import Kraken from '../src/Kraken';
 
+// Load Enviroment variables from .env file
+// this .env file must be in the root folder
+// just for testing
+config();
 
 chai.config.includeStack = true;
 
-const kraken = new Kraken();
+const kraken = new Kraken(process.env.API_KEY, process.env.API_SECRET);
 
 describe('Kraken', () => {
   describe('getTime', () => {
@@ -194,6 +199,18 @@ describe('Kraken', () => {
         expect(error).to.be.equal('Since option must be a unix timestamp');
         done();
       });
+    });
+  });
+
+  describe('getTradeBalance', () => {
+    it('should show an array of trade balance info', (done) => {
+      kraken.getTradeBalance().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        expect(response).to.have.property('eb');
+        expect(response).to.have.property('tb');
+        done();
+      }).catch(error => done(error));
     });
   });
 });

@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import request from './helpers/request';
 
 /**
@@ -11,35 +13,78 @@ class Kraken {
    *                                                public endpoints only.
    * @param {string} [apiBase=api.kraken.com] - The base Kraken API URL
    */
-  constructor(apiKey = {}, apiBase = 'api.kraken.com', apiProtocol = 'https', apiVersion = 0) {
+  constructor(apiKey = null, apiSecret = null, apiBase = 'api.kraken.com', apiProtocol = 'https', apiVersion = 0, apiOTP = null) {
     this.__apiKey = apiKey;
+    this.__apiSecret = apiSecret;
     this.__apiBase = apiBase;
     this.__apiProtocol = apiProtocol;
     this.__apiVersion = apiVersion;
+    this.__apiOTP = apiOTP;
   }
 
-  doRequest(type, endPoint, params = null) {
+  doRequest(type, endPoint, params = {}) {
     return new Promise((resolve, reject) =>  {
-      let path = `/${this.__apiVersion}/`;
+      let path = `/${this.__apiVersion}`;
+      let signature = '';
+      let headers = {};
+      let method = 'GET';
+
+      headers = {
+        'User-Agent': 'Kraken Wrapper Node API Client'
+      };
 
       if (type === 'private') {
-        path = `${path}/private/`;
+        if (!this.__apiKey || !this.__apiSecret) {
+          resolve({error: 'You must configure the API KEY and SECRET to make this request'});
+        }
+        path = `${path}/private/${endPoint}`;
+        method = 'POST';
+
+        const nonce = new Date() * 1000;
+
+        params.nonce = nonce;
+
+        signature = this.createSignature(path, params, nonce);
+
+        headers = {
+          'API-Key': this.__apiKey,
+          'API-Sign': signature
+        };
       } else {
-        path = `${path}/public/`;
+        path = `${path}/public/${endPoint}`;
       }
 
       const options = {
         hostname: this.__apiBase,
         port: 443,
-        path: `${path}${endPoint}`,
-        method: 'GET',
+        path: path,
+        method: method,
+        headers: headers,
+        timeout: 4000
       }
 
       request(options, params).then((response) => {
-        resolve(response.result);
+        if (response.error && response.error.length > 0 ) { // The api is returning an error
+          resolve(response.error);
+        } else {
+          resolve(response.result);
+        }
       }).catch((error) => reject(error));
 
     });
+  }
+
+
+  createSignature(path, params, nonce) {
+    const paramsString = `nonce=${nonce}`; //objectToQueryString(params);
+    const secret = new Buffer(this.__apiSecret, 'base64');
+    const hash = new crypto.createHash('sha256');
+    const hmac = new crypto.createHmac('sha512', secret);
+
+    const hashDigest = hash.update(nonce + paramsString).digest('binary');
+    const signature = hmac.update(path + hashDigest, 'binary').digest('base64');
+
+    return signature;
   }
 
   /**
@@ -334,8 +379,31 @@ class Kraken {
     });
   }
 
+
+  /**
+   * Get TradeBalance
+   * Returns an array of trade balance info
+   *
+   * NOTE: The input params defined in the Kraken documentation are not working right now.
+   *
+   * @param {object} [params] - { aclass: '' // optional, asset class. Default: currency
+   *                                                 asset:  // optional, base asset used to determine balance. Default: ZUSD
+   *                                                 }
+   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ 1498338706, '0.01657700', '0.01660500' ], [ 1498338743, '0.01657100', '0.01660500' ], ... ] , last: 1498339561}
+   *  <pair_name> = pair name
+   *   array of array entries(<time>, <bid>, <ask>)
+   *   last = id to be used as since when polling for new spread data
+   *
+   */
+  getTradeBalance(params) {
+    return new Promise((resolve, reject) => {
+
+      this.doRequest('private', 'TradeBalance', params).then((response) => {
+        resolve(response);
+      }).catch((error) => reject(error));
+    });
+  }
+
 }
-
-
 
 module.exports = Kraken;
