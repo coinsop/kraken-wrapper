@@ -382,23 +382,35 @@ class Kraken {
 
   /**
    * Get TradeBalance
-   * Returns an array of trade balance info
+   * Returns an array of asset names and balance amount
    *
    * NOTE: The input params defined in the Kraken documentation are not working right now.
    *
    * @param {object} [params] - { aclass: '' // optional, asset class. Default: currency
    *                                                 asset:  // optional, base asset used to determine balance. Default: ZUSD
    *                                                 }
-   * @return {Object}  - JSON Object - { XLTCXXBT: [ [ 1498338706, '0.01657700', '0.01660500' ], [ 1498338743, '0.01657100', '0.01660500' ], ... ] , last: 1498339561}
-   *  <pair_name> = pair name
-   *   array of array entries(<time>, <bid>, <ask>)
-   *   last = id to be used as since when polling for new spread data
+   * @return {Object}  - JSON Object - { eb: '772.2627',  tb: '0.0000',  m: '0.0000',  n: '0.0000',  c: '0.0000',  v: '0.0000',  e: '0.0000',  mf: '0.0000' }
    *
    */
   getTradeBalance(params) {
     return new Promise((resolve, reject) => {
 
       this.doRequest('private', 'TradeBalance', params).then((response) => {
+        resolve(response);
+      }).catch((error) => reject(error));
+    });
+  }
+
+   /**
+   * Get Balance
+   * Returns an array of balance info
+   *
+   * @return {Object}  - JSON Object - { ZUSD: '0.0000', XLTC: '0.0000000000', XETH: '0.0000000000' }
+   *
+   */
+  getBalance() {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'Balance').then((response) => {
         resolve(response);
       }).catch((error) => reject(error));
     });

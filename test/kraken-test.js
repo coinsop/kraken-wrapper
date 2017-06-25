@@ -213,4 +213,15 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  describe('getBalance', () => {
+    it('should show an array of asset names and balance amount', (done) => {
+      kraken.getBalance().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
+        expect(response).to.have.property('ZUSD');
+        done();
+      }).catch(error => done(error));
+    });
+  });
 });
