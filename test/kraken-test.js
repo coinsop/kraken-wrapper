@@ -39,7 +39,7 @@ describe('Kraken', () => {
         expect(Object.keys(response).length === 2).to.be.true;
         expect(response.XETH).to.have.property('altname');
         done();
-      }).catch(error=> done(error) );
+      }).catch(error=> done(error));
     });
 
     it('should NOT accept assets that are no strings', (done) => {
@@ -51,7 +51,6 @@ describe('Kraken', () => {
         done();
       });
     });
-
   });
 
   describe('getTradableAssetPairs', () => {
@@ -88,7 +87,7 @@ describe('Kraken', () => {
         expect(Object.keys(response).length === 2).to.be.true;
         expect(response.XETHZUSD).to.have.property('a');
         done();
-      }).catch(error=> done(error) );
+      }).catch(error=> done(error));
     });
 
     it('should NOT accept assets that are no strings', (done) => {
@@ -220,6 +219,17 @@ describe('Kraken', () => {
         expect(response).to.be.instanceof(Object);
         expect(Object.keys(response).length === 0).to.be.false;
         expect(response).to.have.property('ZUSD');
+        done();
+      }).catch(error => done(error));
+    });
+  });
+
+  // To pass this test there must be an open order
+  describe('getOpenOrders', () => {
+    it('should show an array of order info', (done) => {
+      kraken.getOpenOrders().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        expect(Object.keys(response).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });

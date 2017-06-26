@@ -433,6 +433,47 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Get OpenOrders
+   * Returns an array of order info in open array with txid as the key
+   *
+   * @param {object} [params] - { trades: '' //  whether or not to include
+   *                                            trades in output (optional.  default = false)
+   *                                                 userref:  // restrict results to given user
+   *                                                 reference id (optional)
+   *                                                 }
+
+   * @return {Object}  - JSON Object -
+   * { open:
+   * { 'OLMMW7-xxxxx-xxxxx':
+   *   { refid: null,
+   *     userref: null,
+   *     status: 'open',
+   *     opentm: 1498506263.838,
+   *     starttm: 0,
+   *     expiretm: 0,
+   *     descr: [Object],
+   *     vol: '1.00000000',
+   *     vol_exec: '0.00000000',
+   *     cost: '0.00000',
+   *     fee: '0.00000',
+   *     price: '0.00000',
+   *     misc: '',
+   *     oflags: 'fciq' } } }
+   *
+   */
+  getOpenOrders(params) {
+    return new Promise((resolve, reject) => {
+      if (params && params.trades && typeof params.trades !== 'boolean') {
+        resolve({ error: 'Trades option must be a Boolean, default false' });
+      }
+
+      this.doRequest('private', 'OpenOrders', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;
