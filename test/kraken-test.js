@@ -229,7 +229,6 @@ describe('Kraken', () => {
     it('should show an array of order info', (done) => {
       kraken.getOpenOrders().then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
