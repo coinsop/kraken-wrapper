@@ -460,7 +460,7 @@ class Kraken {
    *     fee: '0.00000',
    *     price: '0.00000',
    *     misc: '',
-   *     oflags: 'fciq' } } }
+   *     oflags: 'fciq' }, ... } }
    *
    */
   getOpenOrders(params) {
@@ -470,6 +470,56 @@ class Kraken {
       }
 
       this.doRequest('private', 'OpenOrders', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get ClosedOrders
+   * Returns an array of closed orders info
+   *
+   * @param {object} [params] - { trades = whether or not to include trades in output
+   *                                                    (optional.  default = false)
+   *                                                    userref = restrict results to given user
+   *                                                    reference id (optional)
+   *                                                    start = starting unix timestamp or order
+   *                                                    tx id of results (optional.  exclusive)
+   *                                                    end = ending unix timestamp or order
+   *                                                    tx id of results (optional.  inclusive)
+   *                                                    ofs = result offset
+   *                                                    closetime = which time to use (optional)
+   *                                                    open close both (default)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   * { closed:
+   * { 'OLMMW7-xxxxx-xxxxx':
+   *   { refid: null,
+   *     userref: null,
+   *     status: 'open',
+   *     reason: 'User canceled',
+   *     opentm: 1498506263.838,
+   *     closetm: 1498506273.838,
+   *     starttm: 0,
+   *     expiretm: 0,
+   *     descr: [Object],
+   *     vol: '1.00000000',
+   *     vol_exec: '0.00000000',
+   *     cost: '0.00000',
+   *     fee: '0.00000',
+   *     price: '0.00000',
+   *     misc: '',
+   *     oflags: 'fciq' }, ... } }, count: 5 }
+   *
+   */
+  getClosedOrders(params) {
+    return new Promise((resolve, reject) => {
+      if (params && params.trades && typeof params.trades !== 'boolean') {
+        resolve({ error: 'Trades option must be a Boolean, default false' });
+      }
+
+      this.doRequest('private', 'ClosedOrders', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });

@@ -233,4 +233,14 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  // To pass this test there must be an open order
+  describe('getClosedOrders', () => {
+    it('should show an array of closed order info', (done) => {
+      kraken.getClosedOrders().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        done();
+      }).catch(error => done(error));
+    });
+  });
 });
