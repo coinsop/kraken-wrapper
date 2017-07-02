@@ -1,7 +1,6 @@
 import https from 'https';
 import querystring from 'querystring';
 
-
 /**
  * Checks if str is a valid JSON string
  *
@@ -17,23 +16,9 @@ const isJson = (str) => {
   return true;
 };
 
-const isValidType = (param) => {
-  switch (typeof param) {
-    case 'string':
-      return true;
-    case 'number':
-      return true;
-    case 'boolean':
-      return true;
-    default:
-      return false;
-  }
-};
-
 /**
- * Makes an http request
+ * Makes an https request
  *
- * @param {String} opts.protocol HTTP or HTTPS
  * @param {Object} opts Request connection options
  * @param {String} opts.method HTTP verb or method
  * @param {String} opts.host Host address
@@ -47,7 +32,6 @@ const request = (opts, data = null) =>
   new Promise((resolve, reject) => {
     try {
       let _opts = JSON.parse(JSON.stringify(opts));
-
       if (_opts.method.toUpperCase() === 'GET' && data) {
         _opts = Object.assign({}, _opts, { path: `${_opts.path}?${querystring.stringify(data)}` });
       }
@@ -63,9 +47,12 @@ const request = (opts, data = null) =>
           reject(e);
         });
       });
-
       if ((_opts.method.toUpperCase() === 'PUT' || _opts.method.toUpperCase() === 'POST') && data) {
-        req.write(querystring.stringify(data));
+        if (_opts.headers && (_opts.headers['Content-Type'] === 'application/json' || _opts.headers['content-type'] === 'application/json')) {
+          req.write(JSON.stringify(data));
+        } else {
+          req.write(querystring.stringify(data));
+        }
       }
       req.end();
     } catch (err) {
