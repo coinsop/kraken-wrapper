@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import querystring from 'querystring';
 
 import request from './helpers/request';
 
@@ -28,6 +29,7 @@ class Kraken {
       let signature = '';
       let headers = {};
       let method = 'GET';
+      let paramsSet = params; // eslint-disable-line prefer-const
 
       headers = {
         'User-Agent': 'Kraken Wrapper Node API Client'
@@ -42,14 +44,15 @@ class Kraken {
 
         const nonce = new Date() * 1000;
 
-        const paramsSet = params;
         paramsSet.nonce = nonce;
 
         signature = this.createSignature(path, paramsSet, nonce);
 
         headers = {
           'API-Key': this.__apiKey,
-          'API-Sign': signature
+          'API-Sign': signature,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': querystring.stringify(paramsSet).length
         };
       } else {
         path = `${path}/public/${endPoint}`;
@@ -64,9 +67,9 @@ class Kraken {
         timeout: 4000
       };
 
-      request(options, params).then((response) => {
+      request(options, paramsSet).then((response) => {
         if (response.error && response.error.length > 0) { // The api is returning an error
-          resolve(response.error);
+          resolve(response);
         } else {
           resolve(response.result);
         }
@@ -76,7 +79,7 @@ class Kraken {
 
 
   createSignature(path, params, nonce) {
-    const paramsString = `nonce=${nonce}`; // objectToQueryString(params);
+    const paramsString = querystring.stringify(params);
     const secret = new Buffer(this.__apiSecret, 'base64');
     const hash = new crypto.createHash('sha256'); // eslint-disable-line new-cap
     const hmac = new crypto.createHmac('sha512', secret); // eslint-disable-line new-cap
@@ -520,6 +523,32 @@ class Kraken {
       }
 
       this.doRequest('private', 'ClosedOrders', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get QueryOrders
+   * Returns an array of closed orders info
+   *
+   * @param {object} [params] - { trades = whether or not to include trades in output
+   *                                                    (optional.  default = false)
+   *                                                    userref = restrict results to given user
+   *                                                    reference id (optional)
+   *                                                    txid = comma delimited list of transaction
+   *                                                    ids to query info about (20 maximum)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getQueryOrders(params) {
+    return new Promise((resolve, reject) => {
+      if (params && params.trades && typeof params.trades !== 'boolean') {
+        resolve({ error: 'Trades option must be a Boolean, default false' });
+      }
+
+      this.doRequest('private', 'QueryOrders', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
