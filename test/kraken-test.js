@@ -243,4 +243,24 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  // To pass this test there must be an open order
+  describe('getQueryOrders', () => {
+    it('should show an array of order info', (done) => {
+      kraken.getQueryOrders().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        done();
+      }).catch(error => done(error));
+    });
+  });
+
+  // To pass this test there must be an open order
+  describe('getTradesHistory', () => {
+    it('should show an array of trades info', (done) => {
+      kraken.getTradesHistory().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        done();
+      }).catch(error => done(error));
+    });
+  });
 });

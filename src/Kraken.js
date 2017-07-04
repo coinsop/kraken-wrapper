@@ -402,7 +402,6 @@ class Kraken {
    * Get TradeBalance
    * Returns an array of asset names and balance amount
    *
-   * NOTE: The input params defined in the Kraken documentation are not working right now.
    *
    * @param {object} [params] - { aclass: '' // optional, asset class. Default: currency
    *                                                 asset:  // optional, base asset used to
@@ -530,7 +529,7 @@ class Kraken {
 
   /**
    * Get QueryOrders
-   * Returns an array of closed orders info
+   * Returns an associative array of orders info
    *
    * @param {object} [params] - { trades = whether or not to include trades in output
    *                                                    (optional.  default = false)
@@ -549,6 +548,45 @@ class Kraken {
       }
 
       this.doRequest('private', 'QueryOrders', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get TradesHistory
+   * Returns an array of trade info
+   *
+   * @param {object} [params] - { type = type of trade (optional)
+   *                                                                  all = all types (default)
+   *                                                                   any position = any position
+   *                                                                   (open or closed)
+   *                                                                   closed position = positions
+   *                                                                   that have been closed
+   *                                                                   closing position = any trade
+   *                                                                   closing all or part of a
+   *                                                                   position
+   *                                                                   no position = non-positional
+   *                                                                   trades
+   *                                                   trades = whether or not to include
+   *                                                   trades related to position in output
+   *                                                   (optional.  default = false)
+   *                                                   start = starting unix timestamp or
+   *                                                   trade tx id of results (optional.  exclusive)
+   *                                                   end = ending unix timestamp or trade
+   *                                                   tx id of results (optional.  inclusive)
+   *                                                   ofs = result offset
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getTradesHistory(params) {
+    return new Promise((resolve, reject) => {
+      if (params && params.trades && typeof params.trades !== 'boolean') {
+        resolve({ error: 'Trades option must be a Boolean, default false' });
+      }
+
+      this.doRequest('private', 'TradesHistory', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
