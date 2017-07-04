@@ -649,6 +649,29 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Get Ledgers
+   * Returns an associative array of ledgers info
+   *
+   * @param {object} [params] - {
+   *                                                     id = comma delimited list of
+   *                                                     ledger ids to query info about
+   *                                                     (20 maximum)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getQueryLedgers(params) {
+    return new Promise((resolve, reject) => {
+      if (!params || !params.id) {
+        resolve({ error: 'You have to indicate at least one ledger ID' });
+      }
+      this.doRequest('private', 'QueryLedgers', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;
