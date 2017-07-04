@@ -591,6 +591,28 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Get OpenPositions
+   * Returns an array of trade info
+   *
+   * @param {object} [params] - {
+   *                                                     txid = comma delimited list of transaction
+   *                                                     ids to restrict output to
+   *                                                     docalcs = whether or not to include
+   *                                                     profit/loss calculations
+   *                                                     (optional.  default = false)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getOpenPositions(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'OpenPositions', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;

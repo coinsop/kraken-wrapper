@@ -234,7 +234,6 @@ describe('Kraken', () => {
     });
   });
 
-  // To pass this test there must be an open order
   describe('getClosedOrders', () => {
     it('should show an array of closed order info', (done) => {
       kraken.getClosedOrders().then((response) => {
@@ -244,7 +243,7 @@ describe('Kraken', () => {
     });
   });
 
-  // To pass this test there must be an open order
+
   describe('getQueryOrders', () => {
     it('should show an array of order info', (done) => {
       kraken.getQueryOrders().then((response) => {
@@ -254,10 +253,18 @@ describe('Kraken', () => {
     });
   });
 
-  // To pass this test there must be an open order
   describe('getTradesHistory', () => {
     it('should show an array of trades info', (done) => {
       kraken.getTradesHistory().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        done();
+      }).catch(error => done(error));
+    });
+  });
+
+  describe('getOpenPositions', () => {
+    it('should show an array of open positions info', (done) => {
+      kraken.getOpenPositions().then((response) => {
         expect(response).to.be.instanceof(Object);
         done();
       }).catch(error => done(error));
