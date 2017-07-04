@@ -270,4 +270,13 @@ describe('Kraken', () => {
       }).catch(error => done(error));
     });
   });
+
+  describe('getLedgers', () => {
+    it('should show an array of ledgers info', (done) => {
+      kraken.getLedgers().then((response) => {
+        expect(response).to.be.instanceof(Object);
+        done();
+      }).catch(error => done(error));
+    });
+  });
 });

@@ -594,7 +594,7 @@ class Kraken {
 
   /**
    * Get OpenPositions
-   * Returns an array of trade info
+   * Returns an associative array of open position info
    *
    * @param {object} [params] - {
    *                                                     txid = comma delimited list of transaction
@@ -609,6 +609,42 @@ class Kraken {
   getOpenPositions(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'OpenPositions', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get Ledgers
+   * Returns an associative array of ledgers info
+   *
+   * @param {object} [params] - {
+   *                                                     aclass = asset class (optional):
+   *                                                     currency (default)
+   *                                                     asset = comma delimited list of
+   *                                                     assets to restrict output to
+   *                                                     (optional.  default = all)
+   *                                                     type = type of ledger to
+   *                                                     retrieve (optional):
+   *                                                       all (default)
+   *                                                       deposit
+   *                                                       withdrawal
+   *                                                       trade
+   *                                                       margin
+   *                                                     start = starting unix timestamp
+   *                                                     or ledger id of results
+   *                                                     (optional.  exclusive)
+   *                                                     end = ending unix timestamp
+   *                                                     or ledger id of results
+   *                                                     (optional.  inclusive)
+   *                                                     ofs = result offset
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getLedgers(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'Ledgers', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
