@@ -672,6 +672,28 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Get TradeVolume
+   * Returns an associative array of ledgers info
+   *
+   * @param {object} [params] - {
+   *                                                     pair = comma delimited list
+   *                                                     of asset pairs to get fee info
+   *                                                     on (optional)
+   *                                                     fee-info = whether or not to
+   *                                                     include fee info in results (optional)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getTradeVolume(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'TradeVolume', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;
