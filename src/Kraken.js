@@ -754,6 +754,7 @@ class Kraken {
    *                                                    method = name of the deposit method
    *                                                    new = whether or not to generate a new
    *                                                    address (optional.  default = false)
+   *                                                   }
    *
    * @return {Object}  - Promise - JSON Object
    */
@@ -773,14 +774,35 @@ class Kraken {
    *                                                    currency (default)
    *                                                    asset = asset being deposited
    *                                                    method = name of the deposit method
-   *                                                    new = whether or not to generate a new
-   *                                                    address (optional.  default = false)
+   *                                                    }
    *
    * @return {Object}  - Promise - JSON Object
    */
   getDepositStatus(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'DepositStatus', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get WithdrawInfo
+   * Returns an associative array of withdrawal info
+   *
+   * @param {Object} [params] - {aclass = asset class (optional):
+   *                                                    currency (default)
+   *                                                    asset = asset being deposited
+   *                                                    key = withdrawal key name, as set up on
+   *                                                    your account
+   *                                                    amount = amount to withdraw
+   *                                                   }
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  getWithdrawInfo(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'WithdrawInfo', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
