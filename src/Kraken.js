@@ -725,6 +725,22 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Set CancelOrder
+   * Returns an associative array of ledgers info
+   *
+   * @param {Object} [params] - {txid: transaction id}
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getDepositMethods(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'DepositMethods', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;
