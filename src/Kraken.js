@@ -398,6 +398,10 @@ class Kraken {
     });
   }
 
+  /*
+  ****************************************************
+  * Private methods
+  ******************************************************/
 
   /**
    * Get TradeBalance
@@ -588,6 +592,28 @@ class Kraken {
       }
 
       this.doRequest('private', 'TradesHistory', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get QueryTrades
+   * Returns an associative array of open position info
+   *
+   * @param {Object} [params] - {
+   *                                                     txid = comma delimited list of transaction
+   *                                                     ids to query info about (20 maximum)
+   *                                                     trades = whether or not to include trades
+   *                                                     related to position in output
+   *                                                     (optional.  default = false)
+   *                                                 }
+   *
+   * @return {Object}  - JSON Object -
+   */
+  getQueryTrades(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'QueryTrades', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
