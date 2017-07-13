@@ -5,6 +5,8 @@ import request from './helpers/request';
 
 /**
  * Kraken encapsulates the methods for varios API wrapper objects
+ * For more information on the request inputs and result go to
+ * https://www.kraken.com/en-us/help/api
  */
 class Kraken {
   /**
@@ -730,9 +732,9 @@ class Kraken {
    * Get DepositMethods
    * Returns an associative array of deposit methods
    *
-   * @param {Object} [params] - {aclass = asset class (optional):
+   * @param {Object} [params] - {aclass: asset class (optional):
    *                                                  currency (default)
-   *                                                 asset = asset being deposited}
+   *                                                 asset: asset being deposited}
    *
    * @return {Object}  - Promise - JSON Object
    */
@@ -748,11 +750,11 @@ class Kraken {
    * Get DepositAddresses
    * Returns an associative array of deposit addresses
    *
-   * @param {Object} [params] - {aclass = asset class (optional):
+   * @param {Object} [params] - {aclass: asset class (optional):
    *                                                    currency (default)
-   *                                                    asset = asset being deposited
-   *                                                    method = name of the deposit method
-   *                                                    new = whether or not to generate a new
+   *                                                    asset: asset being deposited
+   *                                                    method: name of the deposit method
+   *                                                    new: whether or not to generate a new
    *                                                    address (optional.  default = false)
    *                                                   }
    *
@@ -770,10 +772,10 @@ class Kraken {
    * Get DepositStatus
    * Returns an array of array deposit status information
    *
-   * @param {Object} [params] - {aclass = asset class (optional):
+   * @param {Object} [params] - {aclass: asset class (optional):
    *                                                    currency (default)
-   *                                                    asset = asset being deposited
-   *                                                    method = name of the deposit method
+   *                                                    asset: asset being deposited
+   *                                                    method: name of the deposit method
    *                                                    }
    *
    * @return {Object}  - Promise - JSON Object
@@ -790,12 +792,12 @@ class Kraken {
    * Get WithdrawInfo
    * Returns an associative array of withdrawal info
    *
-   * @param {Object} [params] - {aclass = asset class (optional):
+   * @param {Object} [params] - {aclass: asset class (optional):
    *                                                    currency (default)
-   *                                                    asset = asset being deposited
-   *                                                    key = withdrawal key name, as set up on
+   *                                                    asset: asset being deposited
+   *                                                    key: withdrawal key name, as set up on
    *                                                    your account
-   *                                                    amount = amount to withdraw
+   *                                                    amount: amount to withdraw
    *                                                   }
    *
    * @return {Object}  - Promise - JSON Object
@@ -803,6 +805,74 @@ class Kraken {
   getWithdrawInfo(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'WithdrawInfo', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Set Withdraw
+   * Creates  a withdraw
+   * Returns an associative array of withdrawal transaction:
+   *
+   * @param {Object} [params] - {aclass: asset class (optional):
+   *                                                  currency (default)
+   *                                                  asset: asset being withdrawn
+   *                                                  key: withdrawal key name,
+   *                                                  as set up on your account
+   *                                                  amount: amount to withdraw, including fees
+   *                                                  }
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  setWithdraw(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'Withdraw', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get WithdrawStatus
+   * Returns an associative array of withdrawal status info
+   *
+   * @param {Object} [params] - {aclass: asset class (optional):
+   *                                                    currency (default)
+   *                                                    asset: asset being withdraw
+   *                                                    method: withdrawal method name (optional)
+   *                                                   }
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  getWithdrawStatus(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'WithdrawStatus', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Set WithdrawCancel
+   * Cancels a Withdrawal
+   * Note: Cancelation cannot be guaranteed.
+   * This will put in a cancelation request.
+   * Depending upon how far along the withdrawal process is,
+   * it may not be possible to cancel the withdrawal.
+   * Returns an associative array of withdrawal status info
+   *
+   * @param {Object} [params] - {aclass: asset class (optional):
+   *                                                   currency (default)
+   *                                                   asset: asset being withdrawn
+   *                                                   refid: withdrawal reference id
+   *                                                   }
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  setWithdrawCancel(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'WithdrawCancel', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
