@@ -674,7 +674,7 @@ class Kraken {
 
   /**
    * Get TradeVolume
-   * Returns an associative array of ledgers info
+   * Returns an associative array
    *
    * @param {Object} [params] - {
    *                                                     pair = comma delimited list
@@ -696,7 +696,7 @@ class Kraken {
 
   /**
    * Set AddOrder
-   * Returns an associative array of ledgers info
+   * Add a new buy or sell order
    *
    * @param {Object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
    *
@@ -712,7 +712,7 @@ class Kraken {
 
   /**
    * Set CancelOrder
-   * Returns an associative array of ledgers info
+   * Cancel an existing order
    *
    * @param {Object} [params] - {txid: transaction id}
    *
@@ -728,7 +728,7 @@ class Kraken {
 
   /**
    * Get DepositMethods
-   * Returns an associative array of ledgers info
+   * Returns an associative array of deposit methods
    *
    * @param {Object} [params] - {aclass = asset class (optional):
    *                                                  currency (default)
@@ -746,7 +746,7 @@ class Kraken {
 
   /**
    * Get DepositAddresses
-   * Returns an associative array of ledgers info
+   * Returns an associative array of deposit addresses
    *
    * @param {Object} [params] - {aclass = asset class (optional):
    *                                                    currency (default)
@@ -760,6 +760,27 @@ class Kraken {
   getDepositAddresses(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'DepositAddresses', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get DepositStatus
+   * Returns an array of array deposit status information
+   *
+   * @param {Object} [params] - {aclass = asset class (optional):
+   *                                                    currency (default)
+   *                                                    asset = asset being deposited
+   *                                                    method = name of the deposit method
+   *                                                    new = whether or not to generate a new
+   *                                                    address (optional.  default = false)
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  getDepositStatus(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'DepositStatus', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
