@@ -55,9 +55,9 @@ All the methods always return a Promise.
 If the result has no errors the result object will be:
 
 ```json
-{ error: [],
-  result:
-   [ ... ]
+{
+  error: [],
+  result: []
 }
 
 ```
