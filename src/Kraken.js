@@ -693,6 +693,22 @@ class Kraken {
       }).catch(error => reject(error));
     });
   }
+
+  /**
+   * Set AddOrder
+   * Returns an associative array of ledgers info
+   *
+   * @param {object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
+   *
+   * @return {Object}  - JSON Object -
+   */
+  setAddOrder(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'AddOrder', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
 }
 
 module.exports = Kraken;
