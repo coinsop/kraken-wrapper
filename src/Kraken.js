@@ -103,7 +103,7 @@ class Kraken {
   /**
    * Returns a json object with a list of the assets available on kraken
    *
-   * @param {object} [params] - asset: comma delimited list of assets to get
+   * @param {Object} [params] - asset: comma delimited list of assets to get
    *                                              info on for given asset class (optional).
    *                                              default = null
    * @return {Object}  - JSON Object -
@@ -135,7 +135,7 @@ class Kraken {
    * Get tradable asset pairs
    * Returns an array of pair names and their info
    *
-   * @param {object} [inputs] - { info: 'all' // (default = all)  leverage, fees, margin (required)
+   * @param {Object} [inputs] - { info: 'all' // (default = all)  leverage, fees, margin (required)
    *                                                   pair: 'all' // (default = all), comma
    *                                                   delimited list of asset pairs
    *                                                 }
@@ -217,7 +217,7 @@ class Kraken {
    * Get OCHL data
    * Returns an array of pair names and their ticker info
    *
-   * @param {object} [params] - { pair: '' // required, asset pair to get OHLC data for
+   * @param {Object} [params] - { pair: '' // required, asset pair to get OHLC data for
    *                                                   interval: 1 // (default = 1), time frame
    *                                                   interval in minutes, could be 1 (default),
    *                                                   5, 15, 30, 60, 240, 1440, 10080, 21600
@@ -271,7 +271,7 @@ class Kraken {
    * Get order book
    * Returns an array of pair name and market depth
    *
-   * @param {object} [params] - { pair: '' // required, asset pair to get market depth for
+   * @param {Object} [params] - { pair: '' // required, asset pair to get market depth for
    *                                                    just one.
    *                                                   count: maximum number of asks/bids (optional)
    *                                                 }
@@ -313,7 +313,7 @@ class Kraken {
    * Get recent trades
    * Returns an array of pair name and recent trade data
    *
-   * @param {object} [params] - { pair: '' // required, asset pair to get trade data for
+   * @param {Object} [params] - { pair: '' // required, asset pair to get trade data for
    *                                                 since: '' // return trade data since given id
    *                                                 (optional.  exclusive)
    *                                                 }
@@ -357,7 +357,7 @@ class Kraken {
    * Get recent spread data
    * Returns an array of pair name and recent spread data
    *
-   * @param {object} [params] - { pair: '' // required, asset pair to get spread data for
+   * @param {Object} [params] - { pair: '' // required, asset pair to get spread data for
    *                                                 since:  // return spread data since given id
    *                                                 (optional.  inclusive)
    *                                                 }
@@ -402,7 +402,7 @@ class Kraken {
    * Returns an array of asset names and balance amount
    *
    *
-   * @param {object} [params] - { aclass: '' // optional, asset class. Default: currency
+   * @param {Object} [params] - { aclass: '' // optional, asset class. Default: currency
    *                                                 asset:  // optional, base asset used to
    *                                                 determine balance, default: ZUSD
    *                                                 }
@@ -439,7 +439,7 @@ class Kraken {
    * Get OpenOrders
    * Returns an array of order info in open array with txid as the key
    *
-   * @param {object} [params] - { trades: '' //  whether or not to include
+   * @param {Object} [params] - { trades: '' //  whether or not to include
    *                                            trades in output (optional.  default = false)
    *                                                 userref:  // restrict results to given user
    *                                                 reference id (optional)
@@ -480,7 +480,7 @@ class Kraken {
    * Get ClosedOrders
    * Returns an array of closed orders info
    *
-   * @param {object} [params] - { trades = whether or not to include trades in output
+   * @param {Object} [params] - { trades = whether or not to include trades in output
    *                                                    (optional.  default = false)
    *                                                    userref = restrict results to given user
    *                                                    reference id (optional)
@@ -530,7 +530,7 @@ class Kraken {
    * Get QueryOrders
    * Returns an associative array of orders info
    *
-   * @param {object} [params] - { trades = whether or not to include trades in output
+   * @param {Object} [params] - { trades = whether or not to include trades in output
    *                                                    (optional.  default = false)
    *                                                    userref = restrict results to given user
    *                                                    reference id (optional)
@@ -556,7 +556,7 @@ class Kraken {
    * Get TradesHistory
    * Returns an array of trade info
    *
-   * @param {object} [params] - { type = type of trade (optional)
+   * @param {Object} [params] - { type = type of trade (optional)
    *                                                                  all = all types (default)
    *                                                                   any position = any position
    *                                                                   (open or closed)
@@ -595,7 +595,7 @@ class Kraken {
    * Get OpenPositions
    * Returns an associative array of open position info
    *
-   * @param {object} [params] - {
+   * @param {Object} [params] - {
    *                                                     txid = comma delimited list of transaction
    *                                                     ids to restrict output to
    *                                                     docalcs = whether or not to include
@@ -617,7 +617,7 @@ class Kraken {
    * Get Ledgers
    * Returns an associative array of ledgers info
    *
-   * @param {object} [params] - {
+   * @param {Object} [params] - {
    *                                                     aclass = asset class (optional):
    *                                                     currency (default)
    *                                                     asset = comma delimited list of
@@ -653,7 +653,7 @@ class Kraken {
    * Get Ledgers
    * Returns an associative array of ledgers info
    *
-   * @param {object} [params] - {
+   * @param {Object} [params] - {
    *                                                     id = comma delimited list of
    *                                                     ledger ids to query info about
    *                                                     (20 maximum)
@@ -676,7 +676,7 @@ class Kraken {
    * Get TradeVolume
    * Returns an associative array of ledgers info
    *
-   * @param {object} [params] - {
+   * @param {Object} [params] - {
    *                                                     pair = comma delimited list
    *                                                     of asset pairs to get fee info
    *                                                     on (optional)
@@ -698,13 +698,29 @@ class Kraken {
    * Set AddOrder
    * Returns an associative array of ledgers info
    *
-   * @param {object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
+   * @param {Object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
    *
    * @return {Object}  - JSON Object -
    */
   setAddOrder(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'AddOrder', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Set CancelOrder
+   * Returns an associative array of ledgers info
+   *
+   * @param {Object} [params] - {txid: transaction id}
+   *
+   * @return {Object}  - JSON Object -
+   */
+  setCancelOrder(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'CancelOrder', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
