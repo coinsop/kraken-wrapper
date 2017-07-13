@@ -71,7 +71,7 @@ class Kraken {
         if (response.error && response.error.length > 0) { // The api is returning an error
           resolve(response);
         } else {
-          resolve(response.result);
+          resolve(response);
         }
       }).catch(error => reject(error));
     });
@@ -149,35 +149,35 @@ class Kraken {
    *                         "fee_volume_currency": "ZUSD",  "margin_call": 80,"margin_stop": 40}
    *
    */
-  getTradableAssetPairs(inputs = {}) {
+  getTradableAssetPairs(params) {
     return new Promise((resolve, reject) => {
       const infoEnum = ['all', 'leverage', 'fees', 'margin'];
-      const params = {};
+      const paramsSet = {};
 
-      if (inputs) {
-        // Check if inputs.info is valid
-        if (inputs.info && typeof inputs.info === 'string' && infoEnum.indexOf(inputs.info) >= 0) {
-          if (inputs.info !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
-            params.info = inputs.info;
+      if (params) {
+        // Check if params.info is valid
+        if (params.info) {
+          if (typeof params.info === 'string' && infoEnum.indexOf(params.info) >= 0) {
+            if (params.info !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
+              paramsSet.info = params.info;
+            }
+          } else {
+            reject('Option info must be a string, could be all, leverage, fees or margin');
           }
-        } else {
-          reject('Option info must be a string, could be all, leverage, fees or margin');
         }
 
-        // Check if inputs.pair is valid
-        if (inputs.pair && typeof inputs.pair === 'string') {
-          const pair = inputs.pair.replace(/\s/g, ''); // Remove any whitespace
-          if (inputs.pair !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
-            params.pair = pair;
+        // Check if params.pair is valid
+        if (params.pair && typeof params.pair === 'string') {
+          const pair = params.pair.replace(/\s/g, ''); // Remove any whitespace
+          if (params.pair !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
+            paramsSet.pair = pair;
           }
         } else {
           reject('pair option must be a string, could be all for all assets or a comma separated values such as ETHUSD,XRPUSD');
         }
-      } else {
-        reject("getTradableAssetPairs require an input {info:'all', pair:'all'} as first argument");
       }
 
-      this.doRequest('public', 'AssetPairs', params).then((response) => {
+      this.doRequest('public', 'AssetPairs', paramsSet).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
@@ -690,6 +690,22 @@ class Kraken {
   getTradeVolume(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'TradeVolume', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Set AddOrder
+   * Returns an associative array of ledgers info
+   *
+   * @param {object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
+   *
+   * @return {Object}  - JSON Object -
+   */
+  setAddOrder(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'AddOrder', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
