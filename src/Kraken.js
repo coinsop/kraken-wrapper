@@ -68,11 +68,7 @@ class Kraken {
       };
 
       request(options, paramsSet).then((response) => {
-        if (response.error && response.error.length > 0) { // The api is returning an error
-          resolve(response);
-        } else {
-          resolve(response);
-        }
+        resolve(response);
       }).catch(error => reject(error));
     });
   }
@@ -94,8 +90,7 @@ class Kraken {
    * Returns a json object with the unix and rfc 1123 time
    * of the Kraken servers
    * This is to aid in approximating the skew time between the server and client.
-   * @return {Object}  - JSON Object { unixtime: 1497805936,
-   *                                                      rfc1123: 'Sun, 18 Jun 17 17:12:16 +0000' }
+   * @return Promise with JSON Object
    */
   getTime() {
     return new Promise((resolve, reject) => {
@@ -108,26 +103,29 @@ class Kraken {
   /**
    * Returns a json object with a list of the assets available on kraken
    *
-   * @param {string} [assets] - comma delimited list of assets to get
+   * @param {object} [params] - asset: comma delimited list of assets to get
    *                                              info on for given asset class (optional).
    *                                              default = null
    * @return {Object}  - JSON Object -
    * { XETH: { aclass: 'currency', altname: 'ETH', decimals: 10,  display_decimals: 5 } }
    *
    */
-  getAssetInfo(assets = null) {
+  getAssetInfo(params) {
     return new Promise((resolve, reject) => {
-      let params = {};
-      if (assets && assets !== 'all') {
-        if (typeof assets !== 'string') {
-          reject('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
+      const paramsValidated = {};
+      if (params && params.asset && params.asset !== 'all') {
+        if (typeof params.asset !== 'string') {
+          reject('Asset option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
         }
         // Remove any whitespace
-        const assetsValidated = assets.replace(/\s/g, '');
-        params = { asset: assetsValidated };
+        const assetValidated = params.asset.replace(/\s/g, '');
+        paramsValidated.asset = assetValidated;
       }
 
-      this.doRequest('public', 'Assets', params).then((response) => {
+      this.doRequest('public', 'Assets', paramsValidated).then((response) => {
+        if (!response.error) { // Could be 504 timeout or another problem with the Kraken API
+          resolve({ error: 'There is a problem with the API' });
+        }
         resolve(response);
       }).catch(error => reject(error));
     });
@@ -152,14 +150,14 @@ class Kraken {
   getTradableAssetPairs(params) {
     return new Promise((resolve, reject) => {
       const infoEnum = ['all', 'leverage', 'fees', 'margin'];
-      const paramsSet = {};
+      const paramsValidated = {};
 
       if (params) {
         // Check if params.info is valid
         if (params.info) {
           if (typeof params.info === 'string' && infoEnum.indexOf(params.info) >= 0) {
             if (params.info !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
-              paramsSet.info = params.info;
+              paramsValidated.info = params.info;
             }
           } else {
             reject('Option info must be a string, could be all, leverage, fees or margin');
@@ -170,14 +168,14 @@ class Kraken {
         if (params.pair && typeof params.pair === 'string') {
           const pair = params.pair.replace(/\s/g, ''); // Remove any whitespace
           if (params.pair !== 'all') { // although all is in the documentation of the Kraken API this value produces an error if used
-            paramsSet.pair = pair;
+            paramsValidated.pair = pair;
           }
         } else {
-          reject('pair option must be a string, could be all for all assets or a comma separated values such as ETHUSD,XRPUSD');
+          reject('Pair option must be a string, could be all for all assets or a comma separated values such as ETHUSD,XRPUSD');
         }
       }
 
-      this.doRequest('public', 'AssetPairs', paramsSet).then((response) => {
+      this.doRequest('public', 'AssetPairs', paramsValidated).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
@@ -188,7 +186,7 @@ class Kraken {
    * Get ticker information
    * Returns an array of pair names and their ticker info
    *
-   * @param {string} [pair] - comma delimited list of asset pairs to get info on
+   * @param {Object} [params] -{pair:  comma delimited list of asset pairs to get info on}
    * @return {Object}  - JSON Object -
    * "XETHZUSD": {"a": ["349.28068","1","1.000"], "b": ["346.75998","4","4.000"],
    * "c": ["348.14094","0.01400000"],"v": ["487.87279670","72199.49047653"],
@@ -196,20 +194,20 @@ class Kraken {
    * "l": ["345.00000","306.99981"],"h": ["351.49000","365.98700"],"o": "348.49998"}
    *
    */
-  getTickerInformation(pair = null) {
+  getTickerInformation(params) {
     return new Promise((resolve, reject) => {
-      const params = {};
+      const paramsValidated = {};
 
-      if (pair && pair !== 'all') {
-        if (typeof pair !== 'string') {
+      if (params && params.pair && params.pair !== 'all') {
+        if (typeof params.pair !== 'string') {
           reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
         }
         // Remove any whitespace
-        const pairValidated = pair.replace(/\s/g, '');
-        params.pair = pairValidated;
+        const pairValidated = params.pair.replace(/\s/g, '');
+        paramsValidated.pair = pairValidated;
       }
 
-      this.doRequest('public', 'Ticker', params).then((response) => {
+      this.doRequest('public', 'Ticker', paramsValidated).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
@@ -233,7 +231,7 @@ class Kraken {
    * "l": ["345.00000","306.99981"],"h": ["351.49000","365.98700"],"o": "348.49998"}
    *
    */
-  getOHLC(params = { pair: null, interval: 1, since: null }) {
+  getOHLC(params) {
     return new Promise((resolve, reject) => {
       const intervalEnum = [1, 5, 15, 30, 60, 240, 1440, 10080, 21600];
       const paramsValidated = params;
@@ -244,7 +242,7 @@ class Kraken {
 
       if (params.pair) {
         if (typeof params.pair !== 'string') {
-          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+          reject('Pair option must be a string, ex: ETHUSD');
         }
         // Remove any whitespace
         const pair = params.pair.replace(/\s/g, '');
@@ -274,6 +272,7 @@ class Kraken {
    * Returns an array of pair name and market depth
    *
    * @param {object} [params] - { pair: '' // required, asset pair to get market depth for
+   *                                                    just one.
    *                                                   count: maximum number of asks/bids (optional)
    *                                                 }
    * @return {Object}  - JSON Object -
@@ -282,7 +281,7 @@ class Kraken {
   *  bids = bid side array of array entries(<price>, <volume>, <timestamp>)
    *
    */
-  getOrderBook(params = { pair: null, count: null }) {
+  getOrderBook(params) {
     return new Promise((resolve, reject) => {
       const paramsValidated = params;
 
@@ -292,7 +291,7 @@ class Kraken {
 
       if (params.pair) {
         if (typeof params.pair !== 'string') {
-          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+          reject('Pair option must be a string, ex: ETHUSD');
         }
         // Remove any whitespace
         paramsValidated.pair = params.pair.replace(/\s/g, '');
@@ -327,7 +326,7 @@ class Kraken {
    *   last = id to be used as since when polling for new trade data
    *
    */
-  getTrades(params = { pair: null, since: null }) {
+  getTrades(params) {
     return new Promise((resolve, reject) => {
       const paramsValidated = params;
       if (!params || !params.pair) {
@@ -336,7 +335,7 @@ class Kraken {
 
       if (params.pair) {
         if (typeof params.pair !== 'string') {
-          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+          reject('Pair option must be a string, ex: ETHUSD');
         }
         // Remove any whitespace
         paramsValidated.pair = params.pair.replace(/\s/g, '');
@@ -379,7 +378,7 @@ class Kraken {
 
       if (params.pair) {
         if (typeof params.pair !== 'string') {
-          reject('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+          reject('Pair option must be a string, ex: ETHUSD');
         }
         // Remove any whitespace
         paramsValidated.pair = params.pair.replace(/\s/g, '');
@@ -690,22 +689,6 @@ class Kraken {
   getTradeVolume(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'TradeVolume', params).then((response) => {
-        resolve(response);
-      }).catch(error => reject(error));
-    });
-  }
-
-  /**
-   * Set AddOrder
-   * Returns an associative array of ledgers info
-   *
-   * @param {object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
-   *
-   * @return {Object}  - JSON Object -
-   */
-  setAddOrder(params) {
-    return new Promise((resolve, reject) => {
-      this.doRequest('private', 'AddOrder', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });

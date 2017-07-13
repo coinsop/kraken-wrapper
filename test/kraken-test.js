@@ -16,9 +16,9 @@ describe('Kraken', () => {
   describe('getTime', () => {
     it('should show the server time', (done) => {
       kraken.getTime().then((time) => {
-        expect(time).to.be.instanceof(Object);
-        expect(time).to.have.property('unixtime');
-        expect(time).to.have.property('rfc1123');
+        expect(time.result).to.be.instanceof(Object);
+        expect(time.result).to.have.property('unixtime');
+        expect(time.result).to.have.property('rfc1123');
         done();
       }).catch(error => done(error));
     });
@@ -26,30 +26,20 @@ describe('Kraken', () => {
 
   describe('getAssetInfo', () => {
     it('should show all the assets available on Kraken', (done) => {
-      kraken.getAssetInfo('all').then((response) => {
+      kraken.getAssetInfo({ asset: 'all' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
 
     it('should show only two assets on Kraken', (done) => {
-      kraken.getAssetInfo('ETH,XRP').then((response) => {
+      kraken.getAssetInfo({ asset: 'ETH,XRP' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 2).to.be.true;
-        expect(response.XETH).to.have.property('altname');
+        expect(Object.keys(response.result).length === 2).to.be.true;
+        expect(response.result.XETH).to.have.property('altname');
         done();
       }).catch(error=> done(error));
-    });
-
-    it('should NOT accept assets that are no strings', (done) => {
-      kraken.getAssetInfo({ curr1: 'ETH', curr2: 'XRP' }).then((response) => {
-        expect(response).to.be.undefined;
-        done();
-      }).catch((error) => {
-        expect(error).to.be.equal('Assets option must be a string, could be all for all assets or a comma separated values such as ETH,XRP');
-        done();
-      });
     });
   });
 
@@ -57,7 +47,7 @@ describe('Kraken', () => {
     it('should show all the tradable assets pairs available on Kraken', (done) => {
       kraken.getTradableAssetPairs({ info: 'all', pair: 'all' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
@@ -65,37 +55,37 @@ describe('Kraken', () => {
     it('should show only two tradable assets on Kraken', (done) => {
       kraken.getTradableAssetPairs({ info: 'all', pair: 'ETHUSD,XRPUSD' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 2).to.be.true;
-        expect(response.XETHZUSD).to.have.property('altname');
+        expect(Object.keys(response.result).length === 2).to.be.true;
+        expect(response.result.XETHZUSD).to.have.property('altname');
         done();
       }).catch(error => done(error));
     });
   });
 
   describe('getTickerInformation', () => {
-    it('should show all the assets available on Kraken', (done) => {
-      kraken.getTickerInformation('ETHUSD').then((response) => {
-        expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+    it('should show ticker informaton for the pair', (done) => {
+      kraken.getTickerInformation({ pair: 'ETHUSD' }).then((response) => {
+        expect(response.result).to.be.instanceof(Object);
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
 
     it('should show only two assets on Kraken', (done) => {
-      kraken.getTickerInformation('ETHUSD,LTCXBT').then((response) => {
+      kraken.getTickerInformation({ pair: 'ETHUSD,LTCXBT' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 2).to.be.true;
-        expect(response.XETHZUSD).to.have.property('a');
+        expect(Object.keys(response.result).length === 2).to.be.true;
+        expect(response.result.XETHZUSD).to.have.property('a');
         done();
       }).catch(error=> done(error));
     });
 
     it('should NOT accept assets that are no strings', (done) => {
       kraken.getTickerInformation({ curr1: 'ETH', curr2: 'XRP' }).then((response) => {
-        expect(response).to.be.undefined;
+        expect(response.result).to.be.undefined;
         done();
       }).catch((error) => {
-        expect(error).to.be.equal('Pair option must be a string, could be all for all pair or a comma separated values such as ETHUSD,XRPUSD');
+        expect(error).to.be.equal('Pair option must be a string, could be all for all assets or a comma separated values such as ETHUSD,XRPUSD');
         done();
       });
     });
@@ -105,15 +95,15 @@ describe('Kraken', () => {
   describe('getOHLC', () => {
     it('should show an array of pair name and OHLC data on Kraken', (done) => {
       kraken.getOHLC({ pair: 'LTCXBT' }).then((response) => {
-        expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(response.result).to.be.instanceof(Object);
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
 
     it('should give and error if the interval option is not a number', (done) => {
       kraken.getOHLC({ pair: 'LTCXBT', interval: 'yesterday' }).then((response) => {
-        expect(response).to.be.undefined;
+        expect(response.result).to.be.undefined;
         done();
       }).catch((error) => {
         expect(error).to.be.equal('Interval option must be a integer, and one of this intervals values 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600');
@@ -123,7 +113,7 @@ describe('Kraken', () => {
 
     it('should give an error if the since option is not a number', (done) => {
       kraken.getOHLC({ pair: 'LTCXBT', since: 'yesterday' }).then((response) => {
-        expect(response).to.be.undefined;
+        expect(response.result).to.be.undefined;
         done();
       }).catch((error) => {
         expect(error).to.be.equal('Since option must be a unix time, for example 1495864800');
@@ -136,14 +126,14 @@ describe('Kraken', () => {
     it('should show an array of pair name and market depth', (done) => {
       kraken.getOrderBook({ pair: 'LTCXBT' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
 
     it('should give an error if the count option is not a number', (done) => {
       kraken.getOrderBook({ pair: 'LTCXBT', count: 'hola' }).then((response) => {
-        expect(response).to.be.undefined;
+        expect(response.result).to.be.undefined;
         done();
       }).catch((error) => {
         expect(error).to.be.equal('Count option must be a integer');
@@ -154,8 +144,8 @@ describe('Kraken', () => {
     it('should show 5 asks and bids for the pair', (done) => {
       kraken.getOrderBook({ pair: 'LTCXBT', count: 5 }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(response.XLTCXXBT.asks.length).to.be.equal(5);
-        expect(response.XLTCXXBT.bids.length).to.be.equal(5);
+        expect(response.result.XLTCXXBT.asks.length).to.be.equal(5);
+        expect(response.result.XLTCXXBT.bids.length).to.be.equal(5);
         done();
       }).catch(error => done(error));
     });
@@ -165,14 +155,14 @@ describe('Kraken', () => {
     it('should show an array of name and recent trade data', (done) => {
       kraken.getTrades({ pair: 'LTCXBT' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
 
     it('should give an error if the since option is not a number', (done) => {
       kraken.getTrades({ pair: 'LTCXBT', since: 'hola' }).then((response) => {
-        expect(response).to.be.undefined;
+        expect(response.result).to.be.undefined;
         done();
       }).catch((error) => {
         expect(error).to.be.equal('Since option must be a unix timestamp');
@@ -185,7 +175,7 @@ describe('Kraken', () => {
     it('should show an array of pair name recent spread data', (done) => {
       kraken.getSpread({ pair: 'LTCXBT' }).then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
+        expect(Object.keys(response.result).length === 0).to.be.false;
         done();
       }).catch(error => done(error));
     });
@@ -205,9 +195,9 @@ describe('Kraken', () => {
     it('should show an array of trade balance info', (done) => {
       kraken.getTradeBalance().then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
-        expect(response).to.have.property('eb');
-        expect(response).to.have.property('tb');
+        expect(Object.keys(response.result).length === 0).to.be.false;
+        expect(response.result).to.have.property('eb');
+        expect(response.result).to.have.property('tb');
         done();
       }).catch(error => done(error));
     });
@@ -217,8 +207,8 @@ describe('Kraken', () => {
     it('should show an array of asset names and balance amount', (done) => {
       kraken.getBalance().then((response) => {
         expect(response).to.be.instanceof(Object);
-        expect(Object.keys(response).length === 0).to.be.false;
-        expect(response).to.have.property('ZUSD');
+        expect(Object.keys(response.result).length === 0).to.be.false;
+        expect(response.result).to.have.property('ZUSD');
         done();
       }).catch(error => done(error));
     });
@@ -228,7 +218,7 @@ describe('Kraken', () => {
   describe('getOpenOrders', () => {
     it('should show an array of order info', (done) => {
       kraken.getOpenOrders().then((response) => {
-        expect(response).to.be.instanceof(Object);
+        expect(response.result).to.be.instanceof(Object);
         done();
       }).catch(error => done(error));
     });
@@ -237,7 +227,7 @@ describe('Kraken', () => {
   describe('getClosedOrders', () => {
     it('should show an array of closed order info', (done) => {
       kraken.getClosedOrders().then((response) => {
-        expect(response).to.be.instanceof(Object);
+        expect(response.result).to.be.instanceof(Object);
         done();
       }).catch(error => done(error));
     });
