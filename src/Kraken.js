@@ -106,7 +106,7 @@ class Kraken {
    * @param {Object} [params] - asset: comma delimited list of assets to get
    *                                              info on for given asset class (optional).
    *                                              default = null
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { XETH: { aclass: 'currency', altname: 'ETH', decimals: 10,  display_decimals: 5 } }
    *
    */
@@ -139,7 +139,7 @@ class Kraken {
    *                                                   pair: 'all' // (default = all), comma
    *                                                   delimited list of asset pairs
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * "DASHUSD": {"altname": "DASHUSD","aclass_base": "currency", "base": "DASH", "quote": "ZUSD",
    *                         "lot": "unit","pair_decimals": 5, "lot_decimals": 8,
    *                         "lot_multiplier": 1, "leverage_buy": [],
@@ -187,7 +187,7 @@ class Kraken {
    * Returns an array of pair names and their ticker info
    *
    * @param {Object} [params] -{pair:  comma delimited list of asset pairs to get info on}
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * "XETHZUSD": {"a": ["349.28068","1","1.000"], "b": ["346.75998","4","4.000"],
    * "c": ["348.14094","0.01400000"],"v": ["487.87279670","72199.49047653"],
    * "p": ["348.24177","348.24025"],"t": [421,21937],
@@ -224,7 +224,7 @@ class Kraken {
    *                                                   since: return committed OHLC data
    *                                                   since given id
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * "XETHZUSD": {"a": ["349.28068","1","1.000"], "b": ["346.75998","4","4.000"],
    * "c": ["348.14094","0.01400000"],"v": ["487.87279670","72199.49047653"],
    * "p": ["348.24177","348.24025"],"t": [421,21937],
@@ -275,7 +275,7 @@ class Kraken {
    *                                                    just one.
    *                                                   count: maximum number of asks/bids (optional)
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { XLTCXXBT: { asks:  [ [Array], [Array], ... ], bids: [ [Array], [Array], ...  ] } }
    * asks = ask side array of array entries(<price>, <volume>, <timestamp>)
   *  bids = bid side array of array entries(<price>, <volume>, <timestamp>)
@@ -317,7 +317,7 @@ class Kraken {
    *                                                 since: '' // return trade data since given id
    *                                                 (optional.  exclusive)
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { XLTCXXBT: [ [ '0.01659800', '7.18559300', 1498314525.2248, 's', 'l', '' ], .... ],
    * last: 1498339561  }
    *  <pair_name> = pair name
@@ -361,7 +361,7 @@ class Kraken {
    *                                                 since:  // return spread data since given id
    *                                                 (optional.  inclusive)
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { XLTCXXBT: [ [ 1498338706, '0.01657700', '0.01660500' ],
    * [ 1498338743, '0.01657100', '0.01660500' ], ... ] , last: 1498339561}
    *  <pair_name> = pair name
@@ -406,7 +406,7 @@ class Kraken {
    *                                                 asset:  // optional, base asset used to
    *                                                 determine balance, default: ZUSD
    *                                                 }
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { eb: '772.2627',  tb: '0.0000',  m: '0.0000',  n: '0.0000',  c: '0.0000',  v: '0.0000',
    * e: '0.0000',  mf: '0.0000' }
    *
@@ -423,7 +423,7 @@ class Kraken {
    * Get Balance
    * Returns an array of balance info
    *
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    * { ZUSD: '0.0000', XLTC: '0.0000000000', XETH: '0.0000000000' }
    *
    */
@@ -700,7 +700,7 @@ class Kraken {
    *
    * @param {Object} [params] - See https://www.kraken.com/en-us/help/api#add-standard-order
    *
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object -
    */
   setAddOrder(params) {
     return new Promise((resolve, reject) => {
@@ -716,7 +716,7 @@ class Kraken {
    *
    * @param {Object} [params] - {txid: transaction id}
    *
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object
    */
   setCancelOrder(params) {
     return new Promise((resolve, reject) => {
@@ -727,16 +727,39 @@ class Kraken {
   }
 
   /**
-   * Set CancelOrder
+   * Get DepositMethods
    * Returns an associative array of ledgers info
    *
-   * @param {Object} [params] - {txid: transaction id}
+   * @param {Object} [params] - {aclass = asset class (optional):
+   *                                                  currency (default)
+   *                                                 asset = asset being deposited}
    *
-   * @return {Object}  - JSON Object -
+   * @return {Object}  - Promise - JSON Object
    */
   getDepositMethods(params) {
     return new Promise((resolve, reject) => {
       this.doRequest('private', 'DepositMethods', params).then((response) => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
+  }
+
+  /**
+   * Get DepositAddresses
+   * Returns an associative array of ledgers info
+   *
+   * @param {Object} [params] - {aclass = asset class (optional):
+   *                                                    currency (default)
+   *                                                    asset = asset being deposited
+   *                                                    method = name of the deposit method
+   *                                                    new = whether or not to generate a new
+   *                                                    address (optional.  default = false)
+   *
+   * @return {Object}  - Promise - JSON Object
+   */
+  getDepositAddresses(params) {
+    return new Promise((resolve, reject) => {
+      this.doRequest('private', 'DepositAddresses', params).then((response) => {
         resolve(response);
       }).catch(error => reject(error));
     });
