@@ -1,14 +1,14 @@
 {
   "name": "kraken-wrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A wrapper for the Kraken exchange API",
-  "main": "src/Kraken.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/Kraken.js --exec babel-node",
+    "start": "nodemon src/index.js --exec babel-node",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors --compilers js:babel-core/register ./test --recursive --require babel-polyfill --timeout 10000",
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && mkdir dist && babel src -s -d dist && npm run files &&  npm run serve",
-    "serve": "DEBUG=* node dist/Kraken.js",
+    "serve": "DEBUG=* node dist/index.js",
     "lint:watch": "esw -f simple-detail -w *.js src",
     "lint": "eslint *.js src",
     "files": "cp ./package.json dist/ && cp ./package-lock.json dist/ && cp ./README.md dist/ && cp ./LICENSE dist/"
@@ -24,7 +24,7 @@
     "exchage",
     "cryptocurrency"
   ],
-  "author": "Olivers De Abreu <olivers@vensign.com> (http://vensign.com/)",
+  "author": "Olivers De Abreu <development@coinsop.com> (https://coinsop.com/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/coinsop/kraken-wrapper/issues"
